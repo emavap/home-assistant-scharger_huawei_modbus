@@ -9,6 +9,12 @@ DOMAIN = "scharger_huawei_modbus"
 async def async_setup_entry(hass, config_entry):
     port = config_entry.options.get("port", 502)
     register_manager = ModbusRegisterManager()
+
+    # Load preset register values
+    from .modbus_server import PRESET_REGISTER_VALUES
+    for addr, val in PRESET_REGISTER_VALUES.items():
+        register_manager.set(addr, val)
+        _LOGGER.debug("[MODBUS] Preset register 0x%04X = %d", addr, val)
     server = start_modbus_server(register_manager, port=port)
 
     hass.data[DOMAIN] = {

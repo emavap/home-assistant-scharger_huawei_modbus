@@ -4,6 +4,17 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
+PRESET_REGISTER_VALUES = {
+    0x3000: 1,   # Charger enable
+    0x3001: 0,   # Charging mode
+    0x3002: 32,  # Max current setting (A)
+    0x3003: 7400, # Power limit (W)
+    0x3004: 1,   # Charging allow
+    0x3005: 1,   # Cable detection flag
+    0x3006: 1,   # Comm handshake
+    0x3010: 1    # Start charging signal
+}
+
 class ModbusRegisterManager:
     def __init__(self):
         self.registers = {}
