@@ -1,3 +1,5 @@
+DOMAIN = "scharger_huawei_modbus"
+
 REGISTER_MAP = {
     0x3000: {"name": "Enable Charging", "unit": None, "scale": 1, "type": "number", "min": 0, "max": 1},
     0x3001: {"name": "Charging Mode", "unit": None, "scale": 1, "type": "number", "min": 0, "max": 3},
