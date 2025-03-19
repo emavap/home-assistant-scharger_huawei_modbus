@@ -1,6 +1,6 @@
 {
   "name": "Huawei SCharger Modbus",
-  "content_in_root": true,
+  "content_in_root": false,
   "domain": "scharger_huawei_modbus",
   "country": "BE",
   "homeassistant": "2023.10.0"
