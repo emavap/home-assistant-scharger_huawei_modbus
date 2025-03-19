@@ -13,6 +13,10 @@ async def async_setup_entry(hass, config_entry):
 
     start_modbus_server(register_manager, port=port)
 
+    # Ensure entity platforms (sensor, number) are loaded
+    await hass.config_entries.async_forward_entry_setups(config_entry, ["sensor", "number"])
+
+    # Register debug logging toggle services
     def enable_debug(call):
         register_manager.set_debug(True)
         _LOGGER.setLevel(logging.DEBUG)
