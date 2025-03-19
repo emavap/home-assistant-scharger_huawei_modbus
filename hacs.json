@@ -2,6 +2,8 @@
   "name": "Huawei SCharger Modbus",
   "content_in_root": false,
   "domain": "scharger_huawei_modbus",
-  "country": "BE",
-  "homeassistant": "2023.10.0"
+  "documentation": "https://github.com/yourusername/home-assistant-scharger_huawei_modbus",
+  "render_readme": true,
+  "version": "1.0.0",
+  "requirements": []
 }

@@ -1,6 +1,11 @@
 from homeassistant.components.number import NumberEntity
-from .const import REGISTER_MAP
+from datetime import timedelta
+import logging
+from .const import DOMAIN, REGISTER_MAP
 from .modbus_server import ModbusRegisterManager
+
+_LOGGER = logging.getLogger(__name__)
+SCAN_INTERVAL = timedelta(seconds=10)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     register_manager = hass.data.get("modbus_register_manager")
@@ -9,6 +14,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         if reg.get("type") != "number":
             continue
         numbers.append(HuaweiChargerNumberEntity(addr, reg, register_manager))
+    _LOGGER.debug("Adding %d number entities for Huawei Charger", len(numbers))
     async_add_entities(numbers)
 
 class HuaweiChargerNumberEntity(NumberEntity):
@@ -23,8 +29,20 @@ class HuaweiChargerNumberEntity(NumberEntity):
         self._attr_native_max_value = reg.get("max", 100)
         self._attr_native_step = self._scale
         self._attr_native_value = self._register_manager.get(self._addr) * self._scale
+        self._attr_should_poll = True
 
     async def async_set_native_value(self, value: float):
         self._attr_native_value = value
         raw_value = int(value / self._scale)
         self._register_manager.set(self._addr, raw_value)
+        _LOGGER.debug("Number [%s] addr=0x%04X set to %.2f (raw=%d)", self._attr_name, self._addr, value, raw_value)
+        self.async_write_ha_state()
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, "huawei_scharger")},
+            "name": "Huawei SCharger",
+            "manufacturer": "Huawei",
+            "model": "SCharger",
+        }

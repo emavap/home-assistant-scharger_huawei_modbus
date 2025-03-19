@@ -1,3 +1,5 @@
+import logging
+_LOGGER = logging.getLogger(__name__)
 import socketserver
 import threading
 
@@ -9,17 +11,17 @@ class ModbusRegisterManager:
     def get(self, addr):
         val = self.registers.get(addr, 0)
         if self.debug:
-            print(f"[MODBUS] READ addr=0x{addr:04X} -> {val}")
+            _LOGGER.debug("[MODBUS] READ addr=0x{addr:04X} -> {val}")
         return val
 
     def set(self, addr, value):
         self.registers[addr] = value
         if self.debug:
-            print(f"[MODBUS] WRITE addr=0x{addr:04X} <- {value}")
+            _LOGGER.debug("[MODBUS] WRITE addr=0x{addr:04X} <- {value}")
 
     def set_debug(self, enabled: bool):
         self.debug = enabled
-        print(f"[MODBUS] Debug logging {'enabled' if enabled else 'disabled'}")
+        _LOGGER.debug("[MODBUS] Debug logging {'enabled' if enabled else 'disabled'}")
 
 class ModbusTCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
