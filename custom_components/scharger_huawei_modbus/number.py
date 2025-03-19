@@ -33,6 +33,8 @@ class HuaweiChargerNumberEntity(NumberEntity):
         raw_value = int(value / self._scale)
         self._register_manager.set(self._addr, raw_value)
         self._attr_native_value = value
+        _LOGGER.debug("Number [%s] write addr 0x%04X = %.2f (raw = %d)",
+                      self._attr_name, self._addr, value, raw_value)
         self.async_write_ha_state()
 
     @property

@@ -22,6 +22,8 @@ class ModbusRegisterManager:
 
 class ModbusTCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
+        client_ip, client_port = self.client_address
+        _LOGGER.info("[MODBUS] New connection from %s:%s", client_ip, client_port)
         try:
             data = self.request.recv(1024)
             if len(data) < 8:
@@ -51,12 +53,14 @@ class ModbusTCPHandler(socketserver.BaseRequestHandler):
                     b''.join(val.to_bytes(2, "big") for val in values)
                 )
                 self.request.sendall(response)
+                _LOGGER.debug("[MODBUS] Read Holding Registers: addr=0x%04X count=%d", start_addr, count)
 
             elif function_code == 6:  # Write Single Register
                 addr = int.from_bytes(data[8:10], "big")
                 value = int.from_bytes(data[10:12], "big")
                 self.server.register_manager.set(addr, value)
                 self.request.sendall(data[:12])  # Echo back
+                _LOGGER.debug("[MODBUS] Write Single Register: addr=0x%04X = %d", addr, value)
 
         except Exception as e:
             _LOGGER.error("ModbusTCPHandler error: %s", e)
@@ -71,4 +75,5 @@ class ModbusTCPServer(socketserver.TCPServer):
 def start_modbus_server(register_manager, port=502):
     server = ModbusTCPServer(('0.0.0.0', port), ModbusTCPHandler, register_manager)
     threading.Thread(target=server.serve_forever, daemon=True).start()
+    _LOGGER.info("[MODBUS] Server started on port %s", port)
     return server
