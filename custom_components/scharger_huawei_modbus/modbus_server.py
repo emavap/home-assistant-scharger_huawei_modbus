@@ -1,59 +1,74 @@
-import logging
-_LOGGER = logging.getLogger(__name__)
 import socketserver
 import threading
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 class ModbusRegisterManager:
     def __init__(self):
         self.registers = {}
         self.debug = False
 
-    def get(self, addr):
-        val = self.registers.get(addr, 0)
-        if self.debug:
-            _LOGGER.debug("[MODBUS] READ addr=0x{addr:04X} -> {val}")
-        return val
+    def get(self, address):
+        return self.registers.get(address, 0)
 
-    def set(self, addr, value):
-        self.registers[addr] = value
+    def set(self, address, value):
+        self.registers[address] = value
         if self.debug:
-            _LOGGER.debug("[MODBUS] WRITE addr=0x{addr:04X} <- {value}")
+            _LOGGER.debug("[MODBUS] Set register 0x%04X = %d", address, value)
 
-    def set_debug(self, enabled: bool):
+    def set_debug(self, enabled):
         self.debug = enabled
-        _LOGGER.debug("[MODBUS] Debug logging {'enabled' if enabled else 'disabled'}")
 
 class ModbusTCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
-        data = self.request.recv(1024)
-        if not data:
-            return
-        manager = self.server.register_manager
-        function_code = data[7]
-        if function_code == 0x03:
-            start = int.from_bytes(data[8:10], 'big')
-            count = int.from_bytes(data[10:12], 'big')
-            values = []
-            for i in range(count):
-                val = manager.get(start + i)
-                values += [(val >> 8) & 0xFF, val & 0xFF]
-            response = bytearray(data[0:4]) + bytes([0, 3 + 2 * count]) + bytes([0x03, 2 * count]) + bytes(values)
-            self.request.sendall(response)
-        elif function_code == 0x06:
-            addr = int.from_bytes(data[8:10], 'big')
-            val = int.from_bytes(data[10:12], 'big')
-            manager.set(addr, val)
-            self.request.sendall(data[:12])
-        else:
-            self.request.sendall(data[:7] + bytes([function_code + 0x80, 0x01]))
+        try:
+            data = self.request.recv(1024)
+            if len(data) < 8:
+                return
+
+            transaction_id = data[0:2]
+            protocol_id = data[2:4]
+            length = data[4:6]
+            unit_id = data[6:7]
+            function_code = data[7]
+
+            if function_code == 3:  # Read Holding Registers
+                start_addr = int.from_bytes(data[8:10], "big")
+                count = int.from_bytes(data[10:12], "big")
+                values = []
+                for i in range(count):
+                    val = self.server.register_manager.get(start_addr + i)
+                    values.append(val)
+
+                byte_count = count * 2
+                response = (
+                    transaction_id +
+                    protocol_id +
+                    bytes([0, byte_count + 3]) +
+                    unit_id +
+                    bytes([function_code, byte_count]) +
+                    b''.join(val.to_bytes(2, "big") for val in values)
+                )
+                self.request.sendall(response)
+
+            elif function_code == 6:  # Write Single Register
+                addr = int.from_bytes(data[8:10], "big")
+                value = int.from_bytes(data[10:12], "big")
+                self.server.register_manager.set(addr, value)
+                self.request.sendall(data[:12])  # Echo back
+
+        except Exception as e:
+            _LOGGER.error("ModbusTCPHandler error: %s", e)
 
 class ModbusTCPServer(socketserver.TCPServer):
+    allow_reuse_address = True
+
     def __init__(self, server_address, handler_class, register_manager):
         super().__init__(server_address, handler_class)
         self.register_manager = register_manager
 
-def start_modbus_server(register_manager, port=8502):
+def start_modbus_server(register_manager, port=502):
     server = ModbusTCPServer(('0.0.0.0', port), ModbusTCPHandler, register_manager)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
     return server
-    thread.start()
