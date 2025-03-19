@@ -1,39 +1,74 @@
-# Huawei SCharger Modbus TCP Integration for Home Assistant
+# Huawei SCharger Modbus Integration for Home Assistant
 
-This custom integration exposes a Modbus TCP **Server** that allows direct communication between Home Assistant and Huawei AC Chargers, based on the official Huawei Northbound Modbus TCP Interconnection Protocol.
+This integration allows Home Assistant to act as a Modbus TCP server for Huawei SCharger EV chargers.
+It exposes charger registers as Home Assistant entities, allowing both monitoring and control from the UI.
 
-## Features
-✅ Fully compliant with Huawei documentation  
-✅ Real Modbus TCP Server implementation  
-✅ Bidirectional sync of HA entities and Modbus registers  
-✅ Register persistence across restarts  
-✅ Configurable debug logging (via UI setup)  
-✅ Works on HA OS / Supervised / Container  
+---
 
-## Supported Entities
+## 📦 Features
 
-| Register | Entity                         | Type     | Unit | Scale |
-|---------:|-------------------------------|----------|------|-------|
-| 0x1000  | Phase L1 Voltage               | Sensor   | V    | 0.1   |
-| 0x1002  | Phase L2 Voltage               | Sensor   | V    | 0.1   |
-| 0x1004  | Phase L3 Voltage               | Sensor   | V    | 0.1   |
-| 0x1006  | Phase L1 Current               | Sensor   | A    | 0.1   |
-| 0x100C  | Total Output Power             | Sensor   | kW   | 0.1   |
-| 0x2000  | Maximum Charging Power         | Number   | kW   | 0.1   |
-| 0x2006  | Charging Control               | Number   | -    | 1     |
+- Modbus TCP Server (Home Assistant exposes registers)
+- Real-time monitoring (Voltage, Current, Power, Energy)
+- Configuration control (Charging power limit, Max current)
+- Full bi-directional sync between HA entities and Modbus registers
+- Debug logging and developer-friendly architecture
 
-## Installation
+---
 
-1. Download and extract this repo to `/config/custom_components/scharger_huawei_modbus/`
+## 📂 Installation (via HACS)
+
+### Step 1: Add Custom Repository
+1. Go to **HACS > Integrations > Menu (⋮) > Custom repositories**
+2. Add repository:  
+   ```
+   https://github.com/emavap/home-assistant-scharger_huawei_modbus
+   ```
+   - Category: **Integration**
+
+### Step 2: Install Integration
+1. After adding the repository, click **Install**
 2. Restart Home Assistant
-3. Go to Settings → Devices & Services → Add Integration → Huawei SCharger Modbus
-4. Optionally enable debug logging
-5. Enjoy automatic entity creation!
 
-## Lovelace Dashboard Example
+### Step 3: Configure Integration
+1. Go to **Settings > Devices & Services > Add Integration**
+2. Search for **Huawei SCharger Modbus**
+3. Follow the configuration wizard
 
-See `examples/lovelace_dashboard.yaml` for a ready-to-import UI panel.
+---
 
-## License
+## ⚙ Configuration Options
 
-MIT
+| Option | Description |
+|--------|-------------|
+| `debug` | Enable/disable verbose Modbus data logging |
+
+---
+
+## 🧪 Lovelace Dashboard Example
+Check `/examples/lovelace_dashboard.yaml` for a working sample dashboard showing:
+- Charging power
+- Charger voltage
+- Max current setting
+
+---
+
+## 📑 Register Reference
+All Modbus registers are documented in [`register_reference.md`](./register_reference.md)
+
+---
+
+## 📸 Screenshots
+You can preview example screenshots in the `/docs/` folder.
+
+---
+
+## 💡 Developer Notes
+- Follows Home Assistant best practices
+- Entities separated in `sensor.py`, `number.py`, and dynamic Modbus server
+- Easily extendable with more registers
+
+---
+
+## 🛠 Credits
+Developed by [@emavap](https://github.com/emavap)
+
