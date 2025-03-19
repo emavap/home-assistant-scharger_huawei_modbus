@@ -27,7 +27,7 @@ class HuaweiChargerOptionsFlowHandler(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
-                vol.Optional("debug", default=self.config_entry.options.get("debug", False)): bool,
-                vol.Optional("port", default=self.config_entry.options.get("port", 502)): int
+                vol.Optional("debug", default=self.config_entry.options["debug"] if "debug" in self.config_entry.options else False): bool,
+                vol.Optional("port", default=self.config_entry.options["port"] if "port" in self.config_entry.options else 502): int
             })
         )

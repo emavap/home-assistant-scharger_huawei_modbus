@@ -1,20 +1,26 @@
 from homeassistant.components.sensor import SensorEntity
-from .const import DOMAIN, REGISTER_MAP
+from .const import REGISTER_MAP
+from .modbus_server import ModbusRegisterManager
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    manager = hass.data[DOMAIN]["register_manager"]
-    sensors = [HuaweiChargerSensor(register, props, manager) for register, props in REGISTER_MAP.items() if props["type"] == "sensor"]
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    register_manager = hass.data.get("modbus_register_manager")
+    sensors = []
+    for addr, reg in REGISTER_MAP.items():
+        if reg.get("type") != "sensor":
+            continue
+        sensors.append(HuaweiChargerSensorEntity(addr, reg, register_manager))
     async_add_entities(sensors)
 
-class HuaweiChargerSensor(SensorEntity):
-    def __init__(self, register, props, manager):
-        self._attr_name = props["name"]
-        self._attr_native_unit_of_measurement = props.get("unit", "")
-        self._register = register
-        self._scale = props.get("scale", 1)
-        self._manager = manager
-        self._attr_unique_id = f"{DOMAIN}_sensor_{register:04X}"
+class HuaweiChargerSensorEntity(SensorEntity):
+    def __init__(self, addr, reg, register_manager: ModbusRegisterManager):
+        self._attr_name = reg.get("name")
+        self._attr_unique_id = f"scharger_sensor_{addr:04X}"
+        self._attr_native_unit_of_measurement = reg.get("unit")
+        self._scale = reg.get("scale", 1.0)
+        self._addr = addr
+        self._register_manager = register_manager
+        self._attr_native_value = 0
 
-    @property
-    def native_value(self):
-        return self._manager.get(self._register) * self._scale
+    async def async_update(self):
+        raw_val = self._register_manager.get(self._addr)
+        self._attr_native_value = raw_val * self._scale
