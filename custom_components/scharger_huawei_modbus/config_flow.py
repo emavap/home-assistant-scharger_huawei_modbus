@@ -12,7 +12,8 @@ class HuaweiChargerFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(step_id="user", data_schema=vol.Schema({}))
 
-    async def async_get_options_flow(self, config_entry):
+    @staticmethod
+    def async_get_options_flow(config_entry):
         return HuaweiChargerOptionsFlowHandler(config_entry)
 
 
