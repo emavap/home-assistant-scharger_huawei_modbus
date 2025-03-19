@@ -16,14 +16,14 @@ async def async_setup_entry(hass, config_entry):
         "modbus_server": server
     }
 
-    await hass.config_entries.async_forward_entry_setups(config_entry, ["sensor", "number", "debug_sensor"])
+    await hass.config_entries.async_forward_entry_setups(config_entry, ["sensor", "number"])
 
     hass.services.async_register(DOMAIN, "enable_debug", lambda call: register_manager.set_debug(True))
     hass.services.async_register(DOMAIN, "disable_debug", lambda call: register_manager.set_debug(False))
     return True
 
 async def async_unload_entry(hass, config_entry):
-    await hass.config_entries.async_unload_platforms(config_entry, ["sensor", "number", "debug_sensor"])
+    await hass.config_entries.async_unload_platforms(config_entry, ["sensor", "number"])
     if DOMAIN in hass.data:
         server = hass.data[DOMAIN].get("modbus_server")
         if server:

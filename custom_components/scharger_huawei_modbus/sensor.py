@@ -13,6 +13,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         for addr, reg in REGISTER_MAP.items()
         if reg.get("type") == "sensor"
     ]
+    sensors.append(HuaweiChargerDebugSensor(register_manager))
     async_add_entities(sensors)
 
 class HuaweiChargerSensorEntity(SensorEntity):
@@ -36,4 +37,33 @@ class HuaweiChargerSensorEntity(SensorEntity):
             "name": "Huawei SCharger",
             "manufacturer": "Huawei",
             "model": "SCharger",
+        }
+
+class HuaweiChargerDebugSensor(SensorEntity):
+    def __init__(self, register_manager):
+        self._attr_name = "Huawei SCharger Debug Registers"
+        self._attr_unique_id = "scharger_debug_raw"
+        self._register_manager = register_manager
+        self._attr_should_poll = True
+
+    async def async_update(self):
+        result = {}
+        for addr in range(0x1000, 0x1020):
+            result[f"0x{addr:04X}"] = self._register_manager.get(addr)
+        self._attr_native_value = str(result)
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, "huawei_scharger")},
+            "name": "Huawei SCharger",
+            "manufacturer": "Huawei",
+            "model": "SCharger",
+        }
+
+    @property
+    def extra_state_attributes(self):
+        return {
+            f"0x{addr:04X}": self._register_manager.get(addr)
+            for addr in range(0x1000, 0x1020)
         }
