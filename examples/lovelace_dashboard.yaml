@@ -1,0 +1,12 @@
+title: Huawei Charger
+views:
+  - title: Charger Overview
+    cards:
+      - type: entities
+        title: Charger Status
+        entities:
+          - sensor.phase_l1_voltage
+          - sensor.phase_l2_voltage
+          - sensor.total_output_power
+          - number.maximum_charging_power
+          - number.charging_control

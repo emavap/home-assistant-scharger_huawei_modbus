@@ -1,0 +1,10 @@
+{
+  "title": "Huawei SCharger Modbus",
+  "description": "Expose a Modbus TCP server interface for Huawei AC chargers based on official protocol.",
+  "options": {
+    "debug": {
+      "name": "Enable debug logging",
+      "description": "When enabled, Modbus register read/write events will be logged in the Home Assistant log."
+    }
+  }
+}

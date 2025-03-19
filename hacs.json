@@ -1,0 +1,11 @@
+{
+  "name": "Huawei SCharger Modbus",
+  "content_in_root": false,
+  "domains": ["sensor", "number"],
+  "homeassistant": "2023.0.0",
+  "country": "BE",
+  "iot_class": "local_polling",
+  "render_readme": true,
+  "zip_release": true,
+  "filename": "scharger_huawei_modbus.zip"
+}
