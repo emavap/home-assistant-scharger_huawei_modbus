@@ -50,7 +50,7 @@ class ModbusTCPServer(socketserver.TCPServer):
         super().__init__(server_address, handler_class)
         self.register_manager = register_manager
 
-def start_modbus_server(register_manager):
-    server = ModbusTCPServer(('0.0.0.0', 502), ModbusTCPHandler, register_manager)
+def start_modbus_server(register_manager, port=8502):
+    server = ModbusTCPServer(('0.0.0.0', port), ModbusTCPHandler, register_manager)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
