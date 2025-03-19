@@ -1,5 +1,4 @@
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import DEVICE_CLASS_POWER
 from datetime import timedelta
 import logging
 from .const import DOMAIN, REGISTER_MAP
