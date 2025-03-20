@@ -1,7 +1,7 @@
 """Huawei SCharger Modbus Integration Init"""
 import logging
 from .modbus_server import start_modbus_server, ModbusRegisterManager, PRESET_REGISTER_VALUES
-from .const import DOMAIN
+from .const import DOMAIN, REGISTER_MAP
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -12,6 +12,13 @@ async def async_setup_entry(hass, config_entry):
     register_manager = ModbusRegisterManager()
     server = start_modbus_server(register_manager, port=port)
 
+    # Clear collected sensor registers (0x1000–0x100C range)
+    for addr in REGISTER_MAP:
+        if addr >= 0x1000 and addr <= 0x100C and REGISTER_MAP[addr]["type"] == "sensor":
+            register_manager.set(addr, 0)
+            _LOGGER.debug("[MODBUS] Cleared sensor register 0x%04X", addr)
+
+    # Only preset HA-owned setting signals
     for addr, val in PRESET_REGISTER_VALUES.items():
         register_manager.set(addr, val)
         _LOGGER.debug("[MODBUS] Preset register 0x%04X = %d", addr, val)
