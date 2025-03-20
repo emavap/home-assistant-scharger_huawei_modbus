@@ -9,6 +9,7 @@ class HuaweiChargerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
+        errors = {}
         if user_input is not None:
             return self.async_create_entry(title="Huawei Charger", data=user_input)
 
@@ -17,7 +18,8 @@ class HuaweiChargerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema({
                 vol.Optional(CONF_PORT, default=502): int,
                 vol.Optional(CONF_DEBUG, default=False): bool,
-            })
+            }),
+            errors=errors
         )
 
     @staticmethod
