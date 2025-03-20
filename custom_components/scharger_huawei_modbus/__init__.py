@@ -16,12 +16,12 @@ async def async_setup_entry(hass, config_entry):
     for addr in REGISTER_MAP:
         if addr >= 0x1000 and addr <= 0x100C and REGISTER_MAP[addr]["type"] == "sensor":
             register_manager.set(addr, 0)
-            _LOGGER.debug("[MODBUS] Cleared sensor register 0x%04X", addr)
+            _LOGGER.debug("[MODBUS][RESET][HA] Sensor register 0x%04X cleared to 0", addr)
 
     # Only preset HA-owned setting signals
     for addr, val in PRESET_REGISTER_VALUES.items():
         register_manager.set(addr, val)
-        _LOGGER.debug("[MODBUS] Preset register 0x%04X = %d", addr, val)
+        _LOGGER.debug("[MODBUS][WRITE][HA] Home Assistant initialized register 0x%04X = %d", addr, val)
 
     if debug:
         _LOGGER.setLevel(logging.DEBUG)
