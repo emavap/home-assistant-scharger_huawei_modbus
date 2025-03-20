@@ -8,7 +8,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         for addr, reg in REGISTER_MAP.items()
         if reg.get("type") == "sensor"
     ]
-    async_add_entities(sensors)
+    async_add_entities(sensors, update_before_add=True)
 
 class HuaweiChargerSensorEntity(SensorEntity):
     def __init__(self, addr, reg, register_manager):
@@ -19,10 +19,11 @@ class HuaweiChargerSensorEntity(SensorEntity):
         self._addr = addr
         self._register_manager = register_manager
         self._attr_should_poll = True
+        self._attr_native_value = self._register_manager.get(self._addr) * self._scale
 
     async def async_update(self):
-        raw_val = self._register_manager.get(self._addr)
-        self._attr_native_value = raw_val * self._scale
+        raw = self._register_manager.get(self._addr)
+        self._attr_native_value = raw * self._scale
 
     @property
     def device_info(self):
