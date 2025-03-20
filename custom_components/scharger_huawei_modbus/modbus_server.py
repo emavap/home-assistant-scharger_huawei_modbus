@@ -5,14 +5,14 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 PRESET_REGISTER_VALUES = {
-    0x3000: 1,   # Charger enable
-    0x3001: 0,   # Charging mode
-    0x3002: 32,  # Max current setting (A)
-    0x3003: 7400, # Power limit (W)
-    0x3004: 1,   # Charging allow
-    0x3005: 1,   # Cable detection flag
-    0x3006: 1,   # Comm handshake
-    0x3010: 1    # Start charging signal
+    0x3000: 1,
+    0x3001: 0,
+    0x3002: 32,
+    0x3003: 7400,
+    0x3004: 1,
+    0x3005: 1,
+    0x3006: 1,
+    0x3010: 0
 }
 
 class ModbusRegisterManager:
@@ -33,52 +33,34 @@ class ModbusRegisterManager:
 
 class ModbusTCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
-        client_ip, client_port = self.client_address
-        _LOGGER.info("[MODBUS] New connection from %s:%s", client_ip, client_port)
+        _LOGGER.info("[MODBUS] New connection from %s:%s", *self.client_address)
         try:
             data = self.request.recv(1024)
             if len(data) < 8:
                 return
-
-            transaction_id = data[0:2]
-            protocol_id = data[2:4]
-            length = data[4:6]
-            unit_id = data[6:7]
+            transaction_id, protocol_id, length, unit_id = data[:2], data[2:4], data[4:6], data[6:7]
             function_code = data[7]
 
-            if function_code == 3:  # Read Holding Registers
-                start_addr = int.from_bytes(data[8:10], "big")
+            if function_code == 3:
+                start = int.from_bytes(data[8:10], "big")
                 count = int.from_bytes(data[10:12], "big")
-                values = []
-                for i in range(count):
-                    val = self.server.register_manager.get(start_addr + i)
-                    values.append(val)
-
-                byte_count = count * 2
-                response = (
-                    transaction_id +
-                    protocol_id +
-                    bytes([0, byte_count + 3]) +
-                    unit_id +
-                    bytes([function_code, byte_count]) +
-                    b''.join(val.to_bytes(2, "big") for val in values)
-                )
+                values = [self.server.register_manager.get(start + i) for i in range(count)]
+                response = (transaction_id + protocol_id +
+                            bytes([0, len(values)*2 + 3]) +
+                            unit_id +
+                            bytes([function_code, len(values)*2]) +
+                            b''.join(val.to_bytes(2, "big") for val in values))
                 self.request.sendall(response)
-                _LOGGER.debug("[MODBUS] Read Holding Registers: addr=0x%04X count=%d", start_addr, count)
-
-            elif function_code == 6:  # Write Single Register
+            elif function_code == 6:
                 addr = int.from_bytes(data[8:10], "big")
-                value = int.from_bytes(data[10:12], "big")
-                self.server.register_manager.set(addr, value)
-                self.request.sendall(data[:12])  # Echo back
-                _LOGGER.debug("[MODBUS] Write Single Register: addr=0x%04X = %d", addr, value)
-
+                val = int.from_bytes(data[10:12], "big")
+                self.server.register_manager.set(addr, val)
+                self.request.sendall(data[:12])
         except Exception as e:
-            _LOGGER.error("ModbusTCPHandler error: %s", e)
+            _LOGGER.error("[MODBUS] Handler error: %s", e)
 
 class ModbusTCPServer(socketserver.TCPServer):
     allow_reuse_address = True
-
     def __init__(self, server_address, handler_class, register_manager):
         super().__init__(server_address, handler_class)
         self.register_manager = register_manager
