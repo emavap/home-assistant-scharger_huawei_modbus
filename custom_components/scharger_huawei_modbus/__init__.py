@@ -26,14 +26,18 @@ async def async_setup_entry(hass, config_entry):
     }
 
     await hass.config_entries.async_forward_entry_setups(config_entry, ["number"])
-
     return True
 
 async def async_unload_entry(hass, config_entry):
-    await hass.config_entries.async_unload_platforms(config_entry, ["number"])
+    unload_ok = await hass.config_entries.async_unload_platforms(config_entry, ["number"])
     server = hass.data[DOMAIN].get("modbus_server")
     if server:
-        server.shutdown()
-        server.server_close()
+        try:
+            _LOGGER.info("[MODBUS] Gracefully shutting down Modbus TCP server...")
+            server.shutdown()
+            server.server_close()
+            _LOGGER.info("[MODBUS] Server closed and socket released")
+        except Exception as e:
+            _LOGGER.warning("[MODBUS] Failed to release server socket: %s", e)
     hass.data.pop(DOMAIN, None)
-    return True
+    return unload_ok
