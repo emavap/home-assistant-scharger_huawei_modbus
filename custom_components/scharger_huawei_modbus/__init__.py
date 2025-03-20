@@ -25,11 +25,11 @@ async def async_setup_entry(hass, config_entry):
         "modbus_server": server
     }
 
-    await hass.config_entries.async_forward_entry_setups(config_entry, ["number"])
+    await hass.config_entries.async_forward_entry_setups(config_entry, ["sensor"])
     return True
 
 async def async_unload_entry(hass, config_entry):
-    unload_ok = await hass.config_entries.async_unload_platforms(config_entry, ["number"])
+    unload_ok = await hass.config_entries.async_unload_platforms(config_entry, ["sensor"])
     server = hass.data[DOMAIN].get("modbus_server")
     if server:
         try:
