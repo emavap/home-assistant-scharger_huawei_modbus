@@ -2,8 +2,10 @@
   "name": "Huawei SCharger Modbus",
   "content_in_root": false,
   "domain": "scharger_huawei_modbus",
-  "documentation": "https://github.com/yourusername/home-assistant-scharger_huawei_modbus",
+  "zip_release": false,
+  "filename": "custom_components/scharger_huawei_modbus/__init__.py",
+  "config_flow": true,
+  "iot_class": "local_polling",
   "render_readme": true,
-  "version": "1.0.0",
-  "requirements": []
+  "country": "CN"
 }

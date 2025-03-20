@@ -1,0 +1,16 @@
+title: Huawei Charger Control
+views:
+  - title: Charger
+    path: charger
+    cards:
+      - type: entities
+        title: Huawei Charger Settings
+        entities:
+          - number.enable_charging
+          - number.charging_mode
+          - number.max_current_setting
+          - number.charging_power_limit
+          - number.allow_charging
+          - number.cable_detection
+          - number.comm_handshake_status
+          - number.start_charging_trigger

@@ -1,9 +1,3 @@
 {
-  "title": "Huawei SCharger Modbus",
-  "options": {
-    "debug": {
-      "name": "Enable debug logging",
-      "description": "Log all Modbus register access events in HA log."
-    }
-  }
+  "component.scharger_huawei_modbus.title": "Huawei SCharger Modbus"
 }

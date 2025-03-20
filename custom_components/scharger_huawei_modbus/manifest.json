@@ -2,9 +2,8 @@
   "domain": "scharger_huawei_modbus",
   "name": "Huawei SCharger Modbus",
   "version": "1.0.0",
-  "config_flow": true,
-  "documentation": "https://github.com/yourgithub/scharger",
-  "dependencies": [],
+  "documentation": "https://github.com/yourname/home-assistant-scharger_huawei_modbus",
+  "requirements": [],
   "codeowners": ["@yourgithub"],
-  "requirements": []
+  "config_flow": true
 }

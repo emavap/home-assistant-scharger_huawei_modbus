@@ -1,8 +1,0 @@
-
-enable_debug:
-  name: Enable Debug Logging
-  description: Enable debug logging for the Huawei SCharger integration.
-
-disable_debug:
-  name: Disable Debug Logging
-  description: Disable debug logging for the Huawei SCharger integration.
