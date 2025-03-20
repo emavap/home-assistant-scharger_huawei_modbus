@@ -1,21 +1,16 @@
-# Huawei SCharger REGISTER_MAP (Final Correct Version)
+# Huawei SCharger REGISTER_MAP — Compliant Version
 
-## Setting Signal Registers (Writable)
+## Documented Collected Signals (Read-only)
 
-| Address | Name                   | Unit | Type   | Min | Max |
-|---------|------------------------|------|--------|-----|-----|
-| 0x3000  | Enable Charging         | -    | number | 0   | 1   |
-| 0x3001  | Charging Mode           | -    | number | 0   | 2   |
-| 0x3002  | Max Current Setting     | A    | number | 6   | 32  |
-| 0x3003  | Charging Power Limit    | W    | number |1000 |7400 |
-| 0x3010  | Start Charging Trigger  | -    | number | 0   | 1   |
-
-## Collected Signal Registers (Read-only Sensors)
-
-| Address | Name                     | Unit | Type   |
-|---------|--------------------------|------|--------|
-| 0x3100  | Charging Status Code     | -    | sensor |
-| 0x3101  | Charging Current L1      | A    | sensor |
-| 0x3102  | Charging Voltage L1      | V    | sensor |
-| 0x3103  | Total Charging Energy    | kWh  | sensor |
-| 0x3104  | Session Energy Delivered | kWh  | sensor |
+| Address | Name                  | Unit | Scale | Type   |
+|---------|------------------------|------|-------|--------|
+| 0x1000  | Phase L1 Voltage       | V    | 0.1   | sensor |
+| 0x1002  | Phase L2 Voltage       | V    | 0.1   | sensor |
+| 0x1004  | Phase L3 Voltage       | V    | 0.1   | sensor |
+| 0x1006  | Phase L1 Current       | A    | 0.01  | sensor |
+| 0x1008  | Phase L2 Current       | A    | 0.01  | sensor |
+| 0x100A  | Phase L3 Current       | A    | 0.01  | sensor |
+| 0x100C  | Total Output Power     | kW   | 0.01  | sensor |
+| 0x100E  | Apparent Power         | kVA  | 0.01  | sensor |
+| 0x1010  | Power Factor           |      | 0.01  | sensor |
+| 0x1012  | Charger Temperature    | °C   | 0.1   | sensor |
