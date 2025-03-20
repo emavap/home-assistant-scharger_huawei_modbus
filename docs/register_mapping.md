@@ -1,16 +1,18 @@
-# Huawei SCharger REGISTER_MAP — Compliant Version
+# Huawei SCharger REGISTER_MAP - Compliant Version
 
-## Documented Collected Signals (Read-only)
+## Collected Signals (from charger to HA):
+| Address | Name                     | Unit | Scale | Entity Type |
+|---------|--------------------------|------|-------|-------------|
+| 0x1000 | Phase L1 Output Voltage   | V    | 0.1   | Sensor      |
+| 0x1002 | Phase L2 Output Voltage   | V    | 0.1   | Sensor      |
+| 0x1004 | Phase L3 Output Voltage   | V    | 0.1   | Sensor      |
+| 0x1006 | Phase L1 Output Current   | A    | 0.1   | Sensor      |
+| 0x1008 | Phase L2 Output Current   | A    | 0.1   | Sensor      |
+| 0x100A | Phase L3 Output Current   | A    | 0.1   | Sensor      |
+| 0x100C | Total Output Power        | kW   | 0.1   | Sensor      |
 
-| Address | Name                  | Unit | Scale | Type   |
-|---------|------------------------|------|-------|--------|
-| 0x1000  | Phase L1 Voltage       | V    | 0.1   | sensor |
-| 0x1002  | Phase L2 Voltage       | V    | 0.1   | sensor |
-| 0x1004  | Phase L3 Voltage       | V    | 0.1   | sensor |
-| 0x1006  | Phase L1 Current       | A    | 0.01  | sensor |
-| 0x1008  | Phase L2 Current       | A    | 0.01  | sensor |
-| 0x100A  | Phase L3 Current       | A    | 0.01  | sensor |
-| 0x100C  | Total Output Power     | kW   | 0.01  | sensor |
-| 0x100E  | Apparent Power         | kVA  | 0.01  | sensor |
-| 0x1010  | Power Factor           |      | 0.01  | sensor |
-| 0x1012  | Charger Temperature    | °C   | 0.1   | sensor |
+## Setting Signals (from HA to charger):
+| Address | Name                  | Unit | Scale | Min | Max | Entity Type |
+|---------|------------------------|------|-------|-----|-----|-------------|
+| 0x2000 | Maximum Charge Power   | kW   | 0.1   | 0   | 22  | Number      |
+| 0x2006 | Charging Control       | -    | 1     | 0   | 2   | Number      |

@@ -25,19 +25,24 @@ async def async_setup_entry(hass, config_entry):
         "modbus_server": server
     }
 
-    await hass.config_entries.async_forward_entry_setups(config_entry, ["sensor"])
+    _LOGGER.info("[MODBUS] Integration setup complete.")
+    await hass.config_entries.async_forward_entry_setups(config_entry, ["sensor", "number"])
     return True
 
 async def async_unload_entry(hass, config_entry):
-    unload_ok = await hass.config_entries.async_unload_platforms(config_entry, ["sensor"])
+    _LOGGER.info("[MODBUS] Starting integration unload process...")
+    unload_ok = await hass.config_entries.async_unload_platforms(config_entry, ["sensor", "number"])
+
     server = hass.data[DOMAIN].get("modbus_server")
     if server:
         try:
-            _LOGGER.info("[MODBUS] Gracefully shutting down Modbus TCP server...")
+            _LOGGER.info("[MODBUS] Attempting to gracefully shutdown Modbus TCP server...")
             server.shutdown()
             server.server_close()
-            _LOGGER.info("[MODBUS] Server closed and socket released")
+            _LOGGER.info("[MODBUS] Server shutdown and socket released successfully.")
         except Exception as e:
-            _LOGGER.warning("[MODBUS] Failed to release server socket: %s", e)
+            _LOGGER.warning("[MODBUS] Server shutdown failed: %s", e)
+
     hass.data.pop(DOMAIN, None)
+    _LOGGER.info("[MODBUS] Integration unload completed.")
     return unload_ok
